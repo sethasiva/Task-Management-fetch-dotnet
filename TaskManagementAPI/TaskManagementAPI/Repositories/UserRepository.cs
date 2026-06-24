@@ -1,84 +1,175 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 using TaskManagementAPI.Models;
+using TaskManagementSystem.DTOs;
 
-namespace TaskManagementAPI.Repositories
+using TaskManagementSystem.Repositories.Interfaces;
+
+namespace TaskManagementSystem.Repositories;
+
+public class UserRepository : IUserRepository
 {
-    public class UserRepository : IUserRepository
+    private readonly string _connectionString;
+
+    public UserRepository(IConfiguration configuration)
     {
-        private readonly string _connectionString;
+        _connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string not found.");
+    }
 
-        public UserRepository(IConfiguration configuration)
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        var users = new List<User>();
+        var sql = "SELECT UserId, UserName, Email FROM Users ORDER BY UserName";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(sql, connection);
+
+        await connection.OpenAsync();
+        using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            users.Add(new User
+            {
+                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                Email = reader.GetString(reader.GetOrdinal("Email"))
+            });
         }
 
-       public List<User> GetAllUsers()
+        return users;
+    }
+
+    public async Task<User?> GetUserByIdAsync(int id)
+    {
+        var sql = "SELECT UserId, UserName, Email FROM Users WHERE UserId = @UserId";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@UserId", id);
+
+        await connection.OpenAsync();
+        using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
         {
-            var users = new List<User>();
-            using (var connection = new SqlConnection(_connectionString))
+            return new User
             {
-                connection.Open();
-                var sql = "SELECT UserId,UserName,Email FROM Users";
-                using (var cmd =new SqlCommand(sql, connection)) 
-                using (var reader = cmd.ExecuteReader())
+                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                Email = reader.GetString(reader.GetOrdinal("Email"))
+            };
+        }
+
+        return null;
+    }
+
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        var sql = "SELECT UserId, UserName, Email FROM Users WHERE Email = @Email";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Email", email);
+
+        await connection.OpenAsync();
+        using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new User
+            {
+                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                Email = reader.GetString(reader.GetOrdinal("Email"))
+            };
+        }
+
+        return null;
+    }
+
+    public async Task<User> AddUserAsync(User user)
+    {
+        var sql = @"
+            INSERT INTO Users (UserName, Email)
+            OUTPUT INSERTED.UserId
+            VALUES (@UserName, @Email)";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@UserName", user.UserName);
+        command.Parameters.AddWithValue("@Email", user.Email);
+
+        await connection.OpenAsync();
+        var userId = (int)await command.ExecuteScalarAsync();
+
+        return new User
+        {
+            UserId = userId,
+            UserName = user.UserName,
+            Email = user.Email
+        };
+    }
+
+    public async Task<UserWithTasksDto?> GetUserWithTasksAsync(int id)
+    {
+        var sql = @"
+            SELECT 
+                u.UserId, u.UserName, u.Email,
+                t.TaskId, t.Title, t.Description, t.Status, t.CreatedDate, t.UserId as TaskUserId
+            FROM Users u
+            LEFT JOIN Tasks t ON u.UserId = t.UserId
+            WHERE u.UserId = @UserId
+            ORDER BY t.CreatedDate DESC";
+
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@UserId", id);
+
+        await connection.OpenAsync();
+        using var reader = await command.ExecuteReaderAsync();
+
+        UserWithTasksDto? result = null;
+        var tasks = new List<TaskItemResponseDto>();
+
+        while (await reader.ReadAsync())
+        {
+            if (result == null)
+            {
+                result = new UserWithTasksDto
                 {
-                    while (reader.Read())
-                    {
-                        users.Add(new User
-                        {
-                            UserId = reader.GetInt32(0),
-                            UserName = reader.GetString(1),
-                            Email = reader.GetString(2)
-                        });
-                    }
-                }
+                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                    UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                    Tasks = new List<TaskItemResponseDto>()
+                };
+            }
+
+            // Check if task exists (not null)
+            if (!reader.IsDBNull(reader.GetOrdinal("TaskId")))
+            {
+                tasks.Add(new TaskItemResponseDto
+                {
+                    TaskId = reader.GetInt32(reader.GetOrdinal("TaskId")),
+                    Title = reader.GetString(reader.GetOrdinal("Title")),
+                    Description = reader.IsDBNull(reader.GetOrdinal("Description"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("Description")),
+                    Status = reader.GetString(reader.GetOrdinal("Status")),
+                    CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
+                    UserId = reader.GetInt32(reader.GetOrdinal("TaskUserId")),
+                    UserName = result.UserName
+                });
             }
         }
 
-        public User? GetUserById(int id)
+        if (result != null)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var sql = "SELECT UserId, UserName, Email FROM Users WHERE UserId = @UserId";
-                using (var cmd = new SqlCommand(sql, connection))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", id);
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                UserId = reader.GetInt32(0),
-                                UserName = reader.GetString(1),
-                                Email = reader.GetString(2)
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
+            result.Tasks = tasks;
         }
 
-        public int AddUser(User user)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var sql = @"
-                    INSERT INTO Users (UserName, Email) 
-                    VALUES (@UserName, @Email);
-                    SELECT SCOPE_IDENTITY();";
-
-                using (var cmd = new SqlCommand(sql, connection))
-                {
-                    cmd.Parameters.AddWithValue("@UserName", user.UserName);
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
-                    return Convert.ToInt32(cmd.ExecuteScalar());
-                }
-            }
-        }
+        return result;
     }
 }

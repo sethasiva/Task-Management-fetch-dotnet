@@ -1,36 +1,58 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using TaskManagementAPI.DTOs;
-using TaskManagementAPI.services;
+﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagementAPI.Models;
+using TaskManagementSystem.DTOs;
+using TaskManagementSystem.Services.Interfaces;
 
-namespace TaskManagementAPI.Controllers
+namespace TaskManagementSystem.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class UsersController : ControllerBase
 {
-  
-    [ApiController]
-    [Route("api/users")]
-    public class UserController : ControllerBase
+    private readonly IUserService _userService;
+
+    public UsersController(IUserService userService)
     {
-        private readonly IUserService _service;
+        _userService = userService;
+    }
 
-        public UserController(IUserService service)
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<User>>>> GetAllUsers()
+    {
+        var response = await _userService.GetAllUsersAsync();
+        return Ok(response);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<User>>> GetUserById(int id)
+    {
+        var response = await _userService.GetUserByIdAsync(id);
+        if (!response.Success)
         {
-            _service = service;
+            return NotFound(response);
         }
+        return Ok(response);
+    }
 
-        [HttpGet]
-        public IActionResult GetAllUsers()
+    [HttpGet("{id}/tasks")]
+    public async Task<ActionResult<ApiResponse<UserWithTasksDto>>> GetUserWithTasks(int id)
+    {
+        var response = await _userService.GetUserWithTasksAsync(id);
+        if (!response.Success)
         {
-            var result = _service.GetAllUsers();
-
-            return Ok(result);
+            return NotFound(response);
         }
+        return Ok(response);
+    }
 
-        [HttpPost]
-        public IActionResult AddUser(CreateUserDto dto)
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<User>>> AddUser([FromBody] CreateUserDto dto)
+    {
+        var response = await _userService.AddUserAsync(dto);
+        if (!response.Success)
         {
-            var result = _service.AddUser(dto);
-
-            return Created("", result);
+            return BadRequest(response);
         }
+        return CreatedAtAction(nameof(GetUserById), new { id = response.Data?.UserId }, response);
     }
 }

@@ -1,10 +1,114 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Detail - Task Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <nav class="navbar">
+        <h1>📋 Task Management</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="users.html">Users</a>
+            <a href="tasks.html">Tasks</a>
+            <a href="add-task.html">Add Task</a>
+        </div>
+    </nav>
 
+    <div class="container">
+        <h2>User Details</h2>
+
+        <div id="alert-container"></div>
+
+        <div class="card">
+            <div class="card-title" id="user-title">Loading user...</div>
+            <p><strong>Email:</strong> <span id="user-email">-</span></p>
+            <p><strong>Total Tasks:</strong> <span id="user-task-count">0</span></p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Assigned Tasks</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-tasks">
+                        <tr><td colspan="4">Loading tasks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="window.location.href='users.html'">← Back to Users</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const API_BASE = 'https://localhost:7000/api';
+
+        async function loadUserDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+
+            if (!userId) {
+                document.getElementById('user-title').textContent = 'No user ID provided.';
+                document.getElementById('user-tasks').innerHTML =
+                    '<tr><td colspan="4">Please provide a valid user ID.</td></tr>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/tasks`);
+                const result = await handleResponse(response);
+                const userData = result.data;
+
+                if (!userData) {
+                    document.getElementById('user-title').textContent = 'User not found.';
+                    document.getElementById('user-tasks').innerHTML =
+                        '<tr><td colspan="4">User does not exist.</td></tr>';
+                    return;
+                }
+
+                // Display user info
+                document.getElementById('user-title').textContent = `👤 ${userData.userName}`;
+                document.getElementById('user-email').textContent = userData.email;
+                document.getElementById('user-task-count').textContent = userData.tasks.length;
+
+                // Display tasks
+                const tbody = document.getElementById('user-tasks');
+
+                if (userData.tasks.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No tasks assigned to this user.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = userData.tasks.map(task => `
+                        <tr>
+                            <td>${task.title}</td>
+                            <td>${task.description || '-'}</td>
+                            <td>${getStatusBadge(task.status)}</td>
+                            <td>${formatDate(task.createdDate)}</td>
+                        </tr>
+                    `).join('');
+
+            } catch (error) {
+                console.error('Error loading user detail:', error);
+                document.getElementById('user-title').textContent = 'Error loading user.';
+                document.getElementById('user-tasks').innerHTML =
+                    '<tr><td colspan="4">Error loading user details.</td></tr>';
+                showAlert('Failed to load user details.', 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadUserDetail);
+    </script>
 </body>
 </html>

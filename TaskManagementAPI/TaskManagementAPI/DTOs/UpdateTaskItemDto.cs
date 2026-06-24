@@ -4,16 +4,11 @@ namespace TaskManagementSystem.DTOs;
 
 public class UpdateTaskItemDto
 {
-    [Required]
-    [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
 
-    [MaxLength(500)]
     public string? Description { get; set; }
 
-    [Required]
-    public string Status { get; set; } = "Todo";
+    public string Status { get; set; } = string.Empty;
 
-    [Required]
     public int UserId { get; set; }
 }

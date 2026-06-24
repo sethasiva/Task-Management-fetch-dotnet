@@ -1,10 +1,116 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Task Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <nav class="navbar">
+        <h1>📋 Task Management</h1>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="users.html">Users</a>
+            <a href="tasks.html">Tasks</a>
+            <a href="add-task.html">Add Task</a>
+        </div>
+    </nav>
 
+    <div class="container">
+        <h2>Dashboard</h2>
+
+        <div id="alert-container"></div>
+
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card total">
+                <div class="number" id="stat-total">0</div>
+                <div class="label">Total Tasks</div>
+            </div>
+            <div class="stat-card todo">
+                <div class="number" id="stat-todo">0</div>
+                <div class="label">Todo</div>
+            </div>
+            <div class="stat-card in-progress">
+                <div class="number" id="stat-inprogress">0</div>
+                <div class="label">In Progress</div>
+            </div>
+            <div class="stat-card done">
+                <div class="number" id="stat-done">0</div>
+                <div class="label">Done</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Recent Tasks</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-tasks">
+                        <tr><td colspan="4">Loading tasks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const API_BASE = 'https://localhost:7000/api'; // Update with your port
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/tasks`);
+                const result = await handleResponse(response);
+                const tasks = result.data || [];
+
+                // Calculate stats
+                const total = tasks.length;
+                const todo = tasks.filter(t => t.status === 'Todo').length;
+                const inProgress = tasks.filter(t => t.status === 'In Progress').length;
+                const done = tasks.filter(t => t.status === 'Done').length;
+
+                // Update stats
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-todo').textContent = todo;
+                document.getElementById('stat-inprogress').textContent = inProgress;
+                document.getElementById('stat-done').textContent = done;
+
+                // Show recent tasks (last 5)
+                const recentTasks = tasks.slice(0, 5);
+                const tbody = document.getElementById('recent-tasks');
+
+                if (recentTasks.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">No tasks available.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = recentTasks.map(task => `
+                    <tr>
+                        <td>${task.title}</td>
+                        <td>${getStatusBadge(task.status)}</td>
+                        <td>${task.userName}</td>
+                        <td>${formatDate(task.createdDate)}</td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('recent-tasks').innerHTML =
+                    '<tr><td colspan="4">Error loading tasks.</td></tr>';
+                showAlert('Failed to load dashboard data.', 'danger');
+            }
+        }
+
+        // Load dashboard on page load
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
 </body>
 </html>

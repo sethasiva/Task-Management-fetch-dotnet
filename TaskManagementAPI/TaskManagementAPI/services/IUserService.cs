@@ -1,10 +1,12 @@
-﻿using TaskManagementAPI.DTOs;
-using TaskManagementAPI.Models;
+﻿using TaskManagementAPI.Models;
+using TaskManagementSystem.DTOs;
 
-namespace TaskManagementAPI.services
+namespace TaskManagementSystem.Services.Interfaces;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        ApiResponse<User> AddUser(CreateUserDto dto);
-    }
+    Task<ApiResponse<List<User>>> GetAllUsersAsync();
+    Task<ApiResponse<User>> GetUserByIdAsync(int id);
+    Task<ApiResponse<User>> AddUserAsync(CreateUserDto dto);
+    Task<ApiResponse<UserWithTasksDto>> GetUserWithTasksAsync(int id);
 }
