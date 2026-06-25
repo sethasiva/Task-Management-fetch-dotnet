@@ -172,4 +172,24 @@ public class UserRepository : IUserRepository
 
         return result;
     }
+
+    public Task<List<User>> GetAllUsers()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> GetUserById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> AddUser(CreateUserDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<UserWithTasksDto> GetUserWithTasks(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

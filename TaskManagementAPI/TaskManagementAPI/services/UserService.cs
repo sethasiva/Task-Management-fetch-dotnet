@@ -105,11 +105,21 @@ namespace TaskManagement.Services
                 Data = user
             };
         }
-       
-      
 
+        public Task<ApiResponse<User>> GetUserByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
 
-       
+        public Task<ApiResponse<User>> AddUserAsync(CreateUserDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApiResponse<UserWithTasksDto>> GetUserWithTasksAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
