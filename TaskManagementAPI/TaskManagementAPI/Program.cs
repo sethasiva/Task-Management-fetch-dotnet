@@ -1,3 +1,4 @@
+using TaskManagement.Services;
 using TaskManagementSystem.Repositories;
 using TaskManagementSystem.Repositories.Interfaces;
 using TaskManagementSystem.Services;
@@ -18,18 +19,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
-// Register services for Dependency Injection
-// SERVICES
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-// REPOSITORIES - BOTH MUST BE REGISTERED
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();  // ? YOU NEED THIS
-builder.Services.AddScoped<IUserRepository, UserRepository>();   // ? AND THIS
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();  // ? AND THIS
 
 var app = builder.Build();
 

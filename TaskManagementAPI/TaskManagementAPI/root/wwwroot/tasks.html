@@ -85,78 +85,8 @@
                 </div>
             </div>
         </div>
-
+     </div>
     <script src="app.js"></script>
-    <script>
-        const API_BASE = "https://localhost:7000/api";
 
-        // Load Users for Dropdown
-        async function loadUsers() {
-            try {
-                const response = await fetch(`${API_BASE}/users`);
-                const result = await response.json();
-
-                const users = result.data || [];
-                const select = document.getElementById("userId");
-
-                select.innerHTML =
-                    '<option value="">Select User</option>';
-
-                users.forEach(user => {
-                    select.innerHTML += `
-                <option value="${user.userId}">
-                    ${user.userName}
-                </option>
-            `;
-                });
-
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        // Add Task
-        async function addTask() {
-            const task = {
-                title: document.getElementById("title").value,
-                description: document.getElementById("description").value,
-                userId: parseInt(document.getElementById("userId").value)
-            };
-
-            try {
-                const response = await fetch(`${API_BASE}/tasks`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(task)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert("Task Added Successfully");
-
-                    document.getElementById("title").value = "";
-                    document.getElementById("description").value = "";
-                    document.getElementById("userId").value = "";
-
-                    loadTasks();
-                } else {
-                    alert(result.message);
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert("Failed to add task");
-            }
-        }
-
-        // Page Load
-        document.addEventListener("DOMContentLoaded", () => {
-            loadUsers();
-            loadTasks();
-        });
-    </script>
 </body>
 </html>

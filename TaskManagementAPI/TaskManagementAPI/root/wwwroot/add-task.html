@@ -43,9 +43,7 @@
                 <div class="form-group">
                     <label for="userId">Assign To </label>
                     <select id="userId" class="form-control" required>
-                        <option value="user 1">user 1</option>
-                        <option value="user 2">user 2</option>
-                        <option value="user 3">user 3</option>
+                        <option value="">Select User</option>
                     </select>
                 </div>
                 <div class="actions">
@@ -57,76 +55,6 @@
     </div>
 
     <script src="app.js"></script>
-    <script>
-        const API_BASE = 'https://localhost:7000/api';
-
-        // Load users for dropdown
-        document.addEventListener('DOMContentLoaded', () => {
-            loadUsersForDropdown('userId');
-        });
-
-        // Handle form submission
-        document.getElementById('add-task-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const title = document.getElementById('title').value.trim();
-            const description = document.getElementById('description').value.trim();
-            const status = document.getElementById('status').value;
-            const userId = document.getElementById('userId').value;
-
-            if (!title) {
-                showAlert('Title is required.', 'danger');
-                return;
-            }
-
-            if (!userId) {
-                showAlert('Please assign the task to a user.', 'danger');
-                return;
-            }
-
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Creating...';
-
-            try {
-                const response = await fetch(`${API_BASE}/tasks`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title,
-                        description: description || null,
-                        status,
-                        userId: parseInt(userId)
-                    })
-                });
-
-                const result = await handleResponse(response);
-
-                if (result.success) {
-                    showAlert('Task created successfully!', 'success');
-                    e.target.reset();
-                    // Reload users dropdown
-                    loadUsersForDropdown('userId');
-                    // Redirect after delay
-                    setTimeout(() => {
-                        window.location.href = 'tasks.html';
-                    }, 1500);
-                } else {
-                    const errors = result.errors || [result.message];
-                    showAlert(errors.join(', '), 'danger');
-                }
-            } catch (error) {
-                console.error('Error creating task:', error);
-                if (error.errors) {
-                    showAlert(error.errors.join(', '), 'danger');
-                } else {
-                    showAlert('Failed to create task.', 'danger');
-                }
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Create Task';
-            }
-        });
-    </script>
+    
 </body>
 </html>
