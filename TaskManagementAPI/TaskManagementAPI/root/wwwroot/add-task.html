@@ -1,60 +1,98 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Task - Task Management</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Task — Task Manager</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>📋 Task Management</h1>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="users.html">Users</a>
-            <a href="tasks.html">Tasks</a>
-            <a href="add-task.html">Add Task</a>
-        </div>
-    </nav>
+<div class="layout">
 
-    <div class="container">
-        <h2>Add New Task</h2>
-
-        <div id="alert-container"></div>
-
-        <div class="card">
-            <form id="add-task-form">
-                <div class="form-group">
-                    <label for="title">Title </label>
-                    <input type="text" id="title" class="form-control" required maxlength="200">
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" class="form-control" maxlength="500"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="status">Status </label>
-                    <select id="status" class="form-control" required>
-                        <option value="Todo">Todo</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Done">Done</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="userId">Assign To </label>
-                    <select id="userId" class="form-control" required>
-                        <option value="">Select User</option>
-                    </select>
-                </div>
-                <div class="actions">
-                    <button type="submit" class="btn btn-success">Create Task</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='tasks.html'">Cancel</button>
-                </div>
-            </form>
-        </div>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">✓</div>
+      TaskManager
     </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="nav-section-label">Manage</div>
+      <a href="tasks.html"    class="nav-link"><span class="nav-icon">📋</span> Tasks</a>
+      <a href="add-task.html" class="nav-link"><span class="nav-icon">➕</span> Add Task</a>
+      <div class="nav-section-label">People</div>
+      <a href="users.html"    class="nav-link"><span class="nav-icon">👥</span> Users</a>
+    </nav>
+  </aside>
 
-    <script src="app.js"></script>
-    
+  <div class="main-wrap">
+    <header class="topbar">
+      <span class="topbar-title">Add New Task</span>
+    </header>
+
+    <main class="page-content">
+      <a href="tasks.html" class="back-link">← Back to Tasks</a>
+
+      <div style="max-width:600px;">
+        <div class="card">
+          <div class="card-header">
+            <span>➕</span>
+            <h2>Create Task</h2>
+          </div>
+          <div class="card-body">
+            <div id="task-alert"></div>
+
+            <div class="form-group">
+              <label class="form-label" for="task-title">Task Title <span class="req">*</span></label>
+              <input type="text" id="task-title" class="form-input"
+                placeholder="e.g. Create database tables" maxlength="200">
+              <div class="form-hint">Max 200 characters.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="task-desc">Description</label>
+              <textarea id="task-desc" class="form-textarea"
+                placeholder="Optional details about this task…" maxlength="500"></textarea>
+              <div class="form-hint">Max 500 characters. Optional.</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="task-status">Status <span class="req">*</span></label>
+                <select id="task-status" class="form-select">
+                  <option value="Todo">Todo</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="task-user">Assign To <span class="req">*</span></label>
+                <select id="task-user" class="form-select">
+                  <option value="">— Loading users… —</option>
+                </select>
+                <div class="form-hint">Create a user first if list is empty.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button id="btn-add-task" class="btn btn-primary" onclick="addTask()" style="flex:1">
+                + Create Task
+              </button>
+              <a href="tasks.html" class="btn btn-outline">Cancel</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reminder box -->
+        <div style="margin-top:16px;padding:14px 16px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;font-size:.85rem;color:#92400E;">
+          <strong>💡 Note:</strong> A user must exist before creating a task. Go to
+          <a href="users.html" style="color:var(--color-primary)">Users</a> to add one first.
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

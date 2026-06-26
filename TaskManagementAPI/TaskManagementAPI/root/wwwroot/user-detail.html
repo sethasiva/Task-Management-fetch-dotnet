@@ -1,56 +1,68 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Detail - Task Management</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Detail — Task Manager</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>📋 Task Management</h1>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="users.html">Users</a>
-            <a href="tasks.html">Tasks</a>
-            <a href="add-task.html">Add Task</a>
-        </div>
-    </nav>
+<div class="layout">
 
-    <div class="container">
-        <h2>User Details</h2>
-
-        <div id="alert-container"></div>
-
-        <div class="card">
-            <div class="card-title" id="user-title">Loading user...</div>
-            <p><strong>Email:</strong> <span id="user-email">-</span></p>
-            <p><strong>Total Tasks:</strong> <span id="user-task-count">0</span></p>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Assigned Tasks</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-tasks">
-                        <tr><td colspan="4">Loading tasks...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <button class="btn btn-secondary" onclick="window.location.href='users.html'">← Back to Users</button>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">✓</div>
+      TaskManager
     </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="nav-section-label">Manage</div>
+      <a href="tasks.html"    class="nav-link"><span class="nav-icon">📋</span> Tasks</a>
+      <a href="add-task.html" class="nav-link"><span class="nav-icon">➕</span> Add Task</a>
+      <div class="nav-section-label">People</div>
+      <a href="users.html"    class="nav-link"><span class="nav-icon">👥</span> Users</a>
+    </nav>
+  </aside>
 
-    <script src="app.js"></script>
+  <div class="main-wrap">
+    <header class="topbar">
+      <span class="topbar-title">User Detail</span>
+    </header>
 
+    <main class="page-content">
+      <a href="users.html" class="back-link">← Back to Users</a>
+
+      <!-- User info (loaded dynamically) -->
+      <div id="user-detail">
+        <div class="loading-overlay"><div class="loading-spinner-dark"></div></div>
+      </div>
+
+      <!-- Assigned Tasks table -->
+      <div class="card">
+        <div class="card-header">
+          <span>📋</span>
+          <h2>Assigned Tasks</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="user-tasks-tbody">
+              <tr><td colspan="4"><div class="loading-overlay"><div class="loading-spinner-dark"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

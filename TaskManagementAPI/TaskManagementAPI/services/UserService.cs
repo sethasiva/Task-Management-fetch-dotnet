@@ -1,8 +1,8 @@
 ﻿
+
 using TaskManagementAPI.Models;
 using TaskManagementSystem.DTOs;
 using TaskManagementSystem.Services.Interfaces;
-
 namespace TaskManagement.Services
 {
     public class UserService : IUserService
@@ -25,7 +25,8 @@ namespace TaskManagement.Services
                 Data = users
             };
         }
-        public async Task<ApiResponse<User>> GetUserById(int id)
+
+        public async Task<ApiResponse<User>> GetUserByIdAsync(int id)
         {
             if (id <= 0)
             {
@@ -36,7 +37,7 @@ namespace TaskManagement.Services
                 };
             }
 
-            var user = await _repository.GetUserById(id);
+            var user = await _repository.GetUserByIdAsync(id);
 
             if (user == null)
             {
@@ -55,7 +56,7 @@ namespace TaskManagement.Services
             };
         }
 
-        public async Task<ApiResponse<User>> AddUser(CreateUserDto dto)
+        public async Task<ApiResponse<User>> AddUserAsync(CreateUserDto dto)
         {
             var errors = new List<string>();
 
@@ -75,7 +76,23 @@ namespace TaskManagement.Services
                 };
             }
 
-            var user = await _repository.AddUser(dto);
+            // Check for duplicate email
+            var existing = await _repository.GetUserByEmailAsync(dto.Email);
+            if (existing != null)
+            {
+                return new ApiResponse<User>
+                {
+                    Success = false,
+                    Message = "Email already exists.",
+                    Errors = new List<string> { "A user with this email already exists." }
+                };
+            }
+
+            var user = await _repository.AddUserAsync(new User
+            {
+                UserName = dto.UserName,
+                Email = dto.Email
+            });
 
             return new ApiResponse<User>
             {
@@ -85,9 +102,9 @@ namespace TaskManagement.Services
             };
         }
 
-        public async Task<ApiResponse<UserWithTasksDto>> GetUserWithTasks(int id)
+        public async Task<ApiResponse<UserWithTasksDto>> GetUserWithTasksAsync(int id)
         {
-            var user = await _repository.GetUserWithTasks(id);
+            var user = await _repository.GetUserWithTasksAsync(id);
 
             if (user == null)
             {
@@ -105,21 +122,5 @@ namespace TaskManagement.Services
                 Data = user
             };
         }
-
-        public Task<ApiResponse<User>> GetUserByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ApiResponse<User>> AddUserAsync(CreateUserDto dto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ApiResponse<UserWithTasksDto>> GetUserWithTasksAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
-

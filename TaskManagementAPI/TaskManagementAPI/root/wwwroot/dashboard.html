@@ -1,67 +1,117 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Task Management</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Task Manager</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>📋 Task Management</h1>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="users.html">Users</a>
-            <a href="tasks.html">Tasks</a>
-            <a href="add-task.html">Add Task</a>
-        </div>
-    </nav>
+<div class="layout">
 
-    <div class="container">
-        <h2>Dashboard</h2>
-
-        <div id="alert-container"></div>
-
-        <div class="stats-grid" id="stats-grid">
-            <div class="stat-card total">
-                <div class="number" id="stat-total">0</div>
-                <div class="label">Total Tasks</div>
-            </div>
-            <div class="stat-card todo">
-                <div class="number" id="stat-todo">0</div>
-                <div class="label">Todo</div>
-            </div>
-            <div class="stat-card in-progress">
-                <div class="number" id="stat-inprogress">0</div>
-                <div class="label">In Progress</div>
-            </div>
-            <div class="stat-card done">
-                <div class="number" id="stat-done">0</div>
-                <div class="label">Done</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Recent Tasks</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Assigned To</th>
-                            <th>Created</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recent-tasks">
-                        <tr><td colspan="4">Loading tasks...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">✓</div>
+      TaskManager
     </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="nav-section-label">Manage</div>
+      <a href="tasks.html"    class="nav-link"><span class="nav-icon">📋</span> Tasks</a>
+      <a href="add-task.html" class="nav-link"><span class="nav-icon">➕</span> Add Task</a>
+      <div class="nav-section-label">People</div>
+      <a href="users.html"    class="nav-link"><span class="nav-icon">👥</span> Users</a>
+    </nav>
+  </aside>
 
-    <script src="app.js"></script>
+  <!-- Main -->
+  <div class="main-wrap">
+    <header class="topbar">
+      <span class="topbar-title">Dashboard</span>
+      <div class="topbar-actions">
+        <a href="add-task.html" class="btn btn-primary btn-sm">+ New Task</a>
+      </div>
+    </header>
 
+    <main class="page-content">
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <div class="label">Total Tasks</div>
+            <div class="value" id="count-total">—</div>
+          </div>
+        </div>
+        <div class="stat-card stat-todo">
+          <div class="stat-icon">🕐</div>
+          <div class="stat-info">
+            <div class="label">Todo</div>
+            <div class="value" id="count-todo">—</div>
+          </div>
+        </div>
+        <div class="stat-card stat-inprog">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-info">
+            <div class="label">In Progress</div>
+            <div class="value" id="count-inprog">—</div>
+          </div>
+        </div>
+        <div class="stat-card stat-done">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="label">Done</div>
+            <div class="value" id="count-done">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Tasks -->
+      <div class="card">
+        <div class="card-header">
+          <span>📋</span>
+          <h2>Recent Tasks</h2>
+          <div style="margin-left:auto">
+            <a href="tasks.html" class="btn btn-outline btn-sm">View All →</a>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="recent-tasks-tbody">
+              <tr><td colspan="4"><div class="loading-overlay"><div class="loading-spinner-dark"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div style="display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;">
+        <a href="users.html"    class="card" style="padding:16px 22px;flex:1;min-width:180px;text-decoration:none;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.5rem">👥</span>
+          <div><strong style="font-size:.93rem">Manage Users</strong><br><small style="color:var(--color-muted)">Add &amp; view users</small></div>
+        </a>
+        <a href="add-task.html" class="card" style="padding:16px 22px;flex:1;min-width:180px;text-decoration:none;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.5rem">➕</span>
+          <div><strong style="font-size:.93rem">Create Task</strong><br><small style="color:var(--color-muted)">Assign to a user</small></div>
+        </a>
+        <a href="tasks.html"    class="card" style="padding:16px 22px;flex:1;min-width:180px;text-decoration:none;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.5rem">🔍</span>
+          <div><strong style="font-size:.93rem">Browse Tasks</strong><br><small style="color:var(--color-muted)">Search &amp; filter</small></div>
+        </a>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

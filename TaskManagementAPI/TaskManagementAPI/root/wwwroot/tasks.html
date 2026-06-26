@@ -1,92 +1,73 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasks - Task Management</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks — Task Manager</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <h1>📋 Task Management</h1>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="users.html">Users</a>
-            <a href="tasks.html">Tasks</a>
-            <a href="add-task.html">Add Task</a>
-        </div>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">✓</div>
+      TaskManager
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a href="dashboard.html" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+      <div class="nav-section-label">Manage</div>
+      <a href="tasks.html"    class="nav-link"><span class="nav-icon">📋</span> Tasks</a>
+      <a href="add-task.html" class="nav-link"><span class="nav-icon">➕</span> Add Task</a>
+      <div class="nav-section-label">People</div>
+      <a href="users.html"    class="nav-link"><span class="nav-icon">👥</span> Users</a>
     </nav>
+  </aside>
 
-    <div class="container">
-        <h2>Task List</h2>
+  <div class="main-wrap">
+    <header class="topbar">
+      <span class="topbar-title">All Tasks</span>
+      <div class="topbar-actions">
+        <a href="add-task.html" class="btn btn-primary btn-sm">+ Add Task</a>
+      </div>
+    </header>
 
-        <div id="alert-container"></div>
-
-        <div class="search-box">
-            <input type="text" id="search-input" class="form-control" placeholder="Search tasks by title...">
-            <button class="btn btn-primary" onclick="searchTasks()">Search</button>
-            <button class="btn btn-secondary" onclick="loadTasks()">Clear</button>
-            <a href="add-task.html" class="btn btn-success" style="text-decoration: none;">+ Add Task</a>
+    <main class="page-content">
+      <!-- Search bar -->
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="form-input"
+            placeholder="Search tasks by title…">
         </div>
+        <button id="search-btn" class="btn btn-primary">Search</button>
+        <button id="clear-search" class="btn btn-outline">Clear</button>
+      </div>
 
-        <div class="container">
-            <h2>Task Management</h2>
-
-            <div id="alert-container"></div>
-
-            <!-- Add Task Form -->
-            <div class="card">
-                <h3>Add New Task</h3>
-
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="title" class="form-control">
-                </div>
-
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="description" class="form-control"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Assign User</label>
-                    <select id="userId" class="form-control">
-                        <option value="">Select User</option>
-                    </select>
-                </div>
-
-                <button class="btn btn-primary" onclick="addTask()">
-                    Add Task
-                </button>
-            </div>
-
-            <!-- Task List -->
-            <div class="card">
-                <h3>Task List</h3>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>User</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="task-list">
-                            <tr>
-                                <td colspan="6">Loading tasks...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      <!-- Tasks table -->
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px">ID</th>
+                <th>Title / Description</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-tbody">
+              <tr><td colspan="7"><div class="loading-overlay"><div class="loading-spinner-dark"></div></div></td></tr>
+            </tbody>
+          </table>
         </div>
-     </div>
-    <script src="app.js"></script>
-
+      </div>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

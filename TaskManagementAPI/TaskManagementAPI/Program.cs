@@ -1,4 +1,4 @@
-using TaskManagement.Services;
+﻿using TaskManagement.Services;
 using TaskManagementSystem.Repositories;
 using TaskManagementSystem.Repositories.Interfaces;
 using TaskManagementSystem.Services;
@@ -9,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,16 +18,19 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-builder.Services.AddScoped<IUserService, UserService>();
+// Register services for Dependency Injection
+// SERVICES
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IUserService, UserService>();   // ✅ FIX 1: இது இல்லாம இருந்தது
 
+// REPOSITORIES
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();  // ? AND THIS
 
 var app = builder.Build();
 
@@ -41,8 +43,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseStaticFiles();        // ✅ FIX 2: MapControllers() முன்னாடி வந்தது
 app.UseAuthorization();
 app.MapControllers();
-app.UseStaticFiles();
 
 app.Run();
