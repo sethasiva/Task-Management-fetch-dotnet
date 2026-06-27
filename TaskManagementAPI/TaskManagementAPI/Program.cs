@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 // Register services for Dependency Injection
 // SERVICES
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddScoped<IUserService, UserService>();   // ✅ FIX 1: இது இல்லாம இருந்தது
+builder.Services.AddScoped<IUserService, UserService>();  
 
 // REPOSITORIES
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
@@ -43,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseStaticFiles();        // ✅ FIX 2: MapControllers() முன்னாடி வந்தது
+app.UseStaticFiles();       
 app.UseAuthorization();
 app.MapControllers();
 
